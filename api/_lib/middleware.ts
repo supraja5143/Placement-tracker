@@ -12,11 +12,8 @@ type AuthHandler = (req: AuthenticatedRequest, res: VercelResponse) => Promise<v
 function handleCors(req: VercelRequest, res: VercelResponse): boolean {
   const origin = req.headers.origin;
   if (origin) {
-    const allowed = process.env.ALLOWED_ORIGINS?.split(",") || [];
-    if (process.env.NODE_ENV !== "production" || allowed.includes(origin)) {
-      res.setHeader("Access-Control-Allow-Origin", origin);
-      res.setHeader("Access-Control-Allow-Credentials", "true");
-    }
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
   }
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");

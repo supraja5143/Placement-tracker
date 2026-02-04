@@ -16,7 +16,6 @@ function getJwtSecret(): string {
   return secret;
 }
 
-const JWT_SECRET = getJwtSecret();
 const JWT_EXPIRES_IN = "7d";
 
 export async function hashPassword(password: string): Promise<string> {
@@ -39,9 +38,9 @@ export interface JwtPayload {
 
 export function signToken(user: User): string {
   const payload: JwtPayload = { userId: user.id, username: user.username };
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  return jwt.sign(payload, getJwtSecret(), { expiresIn: JWT_EXPIRES_IN });
 }
 
 export function verifyToken(token: string): JwtPayload {
-  return jwt.verify(token, JWT_SECRET) as JwtPayload;
+  return jwt.verify(token, getJwtSecret()) as JwtPayload;
 }
