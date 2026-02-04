@@ -8,8 +8,10 @@ import {
   Users,
   ScrollText,
   Menu,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -20,6 +22,7 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { logout } = useAuth();
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -67,6 +70,17 @@ export function Layout({ children }: LayoutProps) {
           );
         })}
       </nav>
+
+      <div className="p-4 border-t border-sidebar-border">
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-muted-foreground hover:text-foreground"
+          onClick={logout}
+        >
+          <LogOut className="mr-3 h-5 w-5" />
+          Logout
+        </Button>
+      </div>
     </div>
   );
 

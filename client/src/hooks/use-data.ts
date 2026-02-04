@@ -2,13 +2,19 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
 import type { InsertDsaTopic, InsertCsTopic, InsertProject, InsertMockInterview, InsertDailyLog } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { getToken } from "@/lib/token";
+
+function authHeaders(): Record<string, string> {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 // === DSA Hooks ===
 export function useDsaTopics() {
   return useQuery({
     queryKey: [api.dsa.list.path],
     queryFn: async () => {
-      const res = await fetch(api.dsa.list.path);
+      const res = await fetch(api.dsa.list.path, { headers: authHeaders() });
       if (!res.ok) throw new Error("Failed to fetch DSA topics");
       return api.dsa.list.responses[200].parse(await res.json());
     },
@@ -22,7 +28,7 @@ export function useCreateDsaTopic() {
     mutationFn: async (data: Omit<InsertDsaTopic, "userId">) => {
       const res = await fetch(api.dsa.create.path, {
         method: api.dsa.create.method,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to create topic");
@@ -42,7 +48,7 @@ export function useUpdateDsaTopic() {
       const url = buildUrl(api.dsa.update.path, { id });
       const res = await fetch(url, {
         method: api.dsa.update.method,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify(updates),
       });
       if (!res.ok) throw new Error("Failed to update topic");
@@ -57,7 +63,7 @@ export function useCsTopics() {
   return useQuery({
     queryKey: [api.cs.list.path],
     queryFn: async () => {
-      const res = await fetch(api.cs.list.path);
+      const res = await fetch(api.cs.list.path, { headers: authHeaders() });
       if (!res.ok) throw new Error("Failed to fetch CS topics");
       return api.cs.list.responses[200].parse(await res.json());
     },
@@ -71,7 +77,7 @@ export function useCreateCsTopic() {
     mutationFn: async (data: Omit<InsertCsTopic, "userId">) => {
       const res = await fetch(api.cs.create.path, {
         method: api.cs.create.method,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to create topic");
@@ -91,7 +97,7 @@ export function useUpdateCsTopic() {
       const url = buildUrl(api.cs.update.path, { id });
       const res = await fetch(url, {
         method: api.cs.update.method,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify(updates),
       });
       if (!res.ok) throw new Error("Failed to update topic");
@@ -106,7 +112,7 @@ export function useProjects() {
   return useQuery({
     queryKey: [api.projects.list.path],
     queryFn: async () => {
-      const res = await fetch(api.projects.list.path);
+      const res = await fetch(api.projects.list.path, { headers: authHeaders() });
       if (!res.ok) throw new Error("Failed to fetch projects");
       return api.projects.list.responses[200].parse(await res.json());
     },
@@ -120,7 +126,7 @@ export function useCreateProject() {
     mutationFn: async (data: Omit<InsertProject, "userId">) => {
       const res = await fetch(api.projects.create.path, {
         method: api.projects.create.method,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to create project");
@@ -140,7 +146,7 @@ export function useUpdateProject() {
       const url = buildUrl(api.projects.update.path, { id });
       const res = await fetch(url, {
         method: api.projects.update.method,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify(updates),
       });
       if (!res.ok) throw new Error("Failed to update project");
@@ -156,7 +162,7 @@ export function useDeleteProject() {
   return useMutation({
     mutationFn: async (id: number) => {
       const url = buildUrl(api.projects.delete.path, { id });
-      const res = await fetch(url, { method: api.projects.delete.method });
+      const res = await fetch(url, { method: api.projects.delete.method, headers: authHeaders() });
       if (!res.ok) throw new Error("Failed to delete project");
     },
     onSuccess: () => {
@@ -171,7 +177,7 @@ export function useMockInterviews() {
   return useQuery({
     queryKey: [api.mocks.list.path],
     queryFn: async () => {
-      const res = await fetch(api.mocks.list.path);
+      const res = await fetch(api.mocks.list.path, { headers: authHeaders() });
       if (!res.ok) throw new Error("Failed to fetch mock interviews");
       const data = await res.json();
       return api.mocks.list.responses[200].parse(data).map(m => ({
@@ -189,7 +195,7 @@ export function useCreateMockInterview() {
     mutationFn: async (data: Omit<InsertMockInterview, "userId">) => {
       const res = await fetch(api.mocks.create.path, {
         method: api.mocks.create.method,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to log interview");
@@ -208,7 +214,7 @@ export function useDeleteMockInterview() {
   return useMutation({
     mutationFn: async (id: number) => {
       const url = buildUrl(api.mocks.delete.path, { id });
-      const res = await fetch(url, { method: api.mocks.delete.method });
+      const res = await fetch(url, { method: api.mocks.delete.method, headers: authHeaders() });
       if (!res.ok) throw new Error("Failed to delete interview");
     },
     onSuccess: () => {
@@ -223,7 +229,7 @@ export function useDailyLogs() {
   return useQuery({
     queryKey: [api.logs.list.path],
     queryFn: async () => {
-      const res = await fetch(api.logs.list.path);
+      const res = await fetch(api.logs.list.path, { headers: authHeaders() });
       if (!res.ok) throw new Error("Failed to fetch logs");
       return api.logs.list.responses[200].parse(await res.json());
     },
@@ -237,7 +243,7 @@ export function useCreateDailyLog() {
     mutationFn: async (data: Omit<InsertDailyLog, "userId">) => {
       const res = await fetch(api.logs.create.path, {
         method: api.logs.create.method,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to create log");
