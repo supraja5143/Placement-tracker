@@ -87,16 +87,17 @@ app.use((req, res, next) => {
     await setupVite(httpServer, app);
   }
 
-  /* ---------- Render-required PORT ---------- */
+
+  // Register routes (do NOT block server startup)
+  registerRoutes(httpServer, app).catch((err) => {
+    console.error("Route registration failed:", err);
+  });
+
+  // Start server IMMEDIATELY
   const port = parseInt(process.env.PORT || "5000", 10);
 
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-    },
-    () => {
-      log(`Backend running on port ${port}`);
-    }
-  );
+  httpServer.listen(port, "0.0.0.0", () => {
+    console.log(`Backend running on port ${port}`);
+  });
+
 })();
