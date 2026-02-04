@@ -6,7 +6,7 @@ import {
   type Project, type InsertProject,
   type MockInterview, type InsertMockInterview,
   type DailyLog, type InsertDailyLog
-} from "../../shared/schema";
+} from "../shared/schema";
 import { getDb } from "./db";
 import { eq, and, desc } from "drizzle-orm";
 

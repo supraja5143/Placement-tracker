@@ -1,7 +1,7 @@
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
-import type { User } from "../../shared/schema";
+import type { User } from "../shared/schema";
 
 const scryptAsync = promisify(scrypt);
 

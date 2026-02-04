@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { withHandler } from "./_lib/middleware";
-import { hashPassword, comparePasswords, signToken } from "./_lib/auth";
-import { storage } from "./_lib/storage";
+import { withHandler } from "../server/middleware";
+import { hashPassword, comparePasswords, signToken } from "../server/auth";
+import { storage } from "../server/storage";
 import { z } from "zod";
 
 const authInput = z.object({
