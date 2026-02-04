@@ -18,8 +18,10 @@ export function useAuth() {
     });
 
     if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.message || "Login failed");
+      const text = await res.text();
+      let message = "Login failed";
+      try { message = JSON.parse(text).message || message; } catch { message = text || message; }
+      throw new Error(message);
     }
 
     const data: { token: string; user: AuthUser } = await res.json();
@@ -36,8 +38,10 @@ export function useAuth() {
     });
 
     if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.message || "Registration failed");
+      const text = await res.text();
+      let message = "Registration failed";
+      try { message = JSON.parse(text).message || message; } catch { message = text || message; }
+      throw new Error(message);
     }
 
     const data: { token: string; user: AuthUser } = await res.json();

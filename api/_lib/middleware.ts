@@ -32,10 +32,7 @@ export function withHandler(handler: Handler): Handler {
       await handler(req, res);
     } catch (error: any) {
       console.error("API Error:", error);
-      const message = process.env.NODE_ENV === "production"
-        ? "Internal Server Error"
-        : error.message || "Internal Server Error";
-      res.status(500).json({ message });
+      res.status(500).json({ message: error.message || "Internal Server Error" });
     }
   };
 }

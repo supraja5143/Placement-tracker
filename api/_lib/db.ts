@@ -25,4 +25,11 @@ function getPool(): pg.Pool {
   return pool;
 }
 
-export const db = drizzle(getPool(), { schema });
+let drizzleInstance: ReturnType<typeof drizzle> | undefined;
+
+export function getDb() {
+  if (!drizzleInstance) {
+    drizzleInstance = drizzle(getPool(), { schema });
+  }
+  return drizzleInstance;
+}

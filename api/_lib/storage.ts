@@ -7,7 +7,7 @@ import {
   type MockInterview, type InsertMockInterview,
   type DailyLog, type InsertDailyLog
 } from "../../shared/schema";
-import { db } from "./db";
+import { getDb } from "./db";
 import { eq, and, desc } from "drizzle-orm";
 
 export interface IStorage {
@@ -45,27 +45,27 @@ export interface IStorage {
 export class DatabaseStorage implements IStorage {
   // User
   async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
+    const [user] = await getDb().select().from(users).where(eq(users.id, id));
     return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
+    const [user] = await getDb().select().from(users).where(eq(users.username, username));
     return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
+    const [user] = await getDb().insert(users).values(insertUser).returning();
     return user;
   }
 
   // DSA
   async getDsaTopics(userId: number): Promise<DsaTopic[]> {
-    return await db.select().from(dsaTopics).where(eq(dsaTopics.userId, userId));
+    return await getDb().select().from(dsaTopics).where(eq(dsaTopics.userId, userId));
   }
 
   async createDsaTopic(userId: number, topic: Omit<InsertDsaTopic, "userId">): Promise<DsaTopic> {
-    const [newTopic] = await db.insert(dsaTopics).values({ ...topic, userId }).returning();
+    const [newTopic] = await getDb().insert(dsaTopics).values({ ...topic, userId }).returning();
     return newTopic;
   }
 
@@ -80,11 +80,11 @@ export class DatabaseStorage implements IStorage {
 
   // CS
   async getCsTopics(userId: number): Promise<CsTopic[]> {
-    return await db.select().from(csTopics).where(eq(csTopics.userId, userId));
+    return await getDb().select().from(csTopics).where(eq(csTopics.userId, userId));
   }
 
   async createCsTopic(userId: number, topic: Omit<InsertCsTopic, "userId">): Promise<CsTopic> {
-    const [newTopic] = await db.insert(csTopics).values({ ...topic, userId }).returning();
+    const [newTopic] = await getDb().insert(csTopics).values({ ...topic, userId }).returning();
     return newTopic;
   }
 
@@ -99,11 +99,11 @@ export class DatabaseStorage implements IStorage {
 
   // Projects
   async getProjects(userId: number): Promise<Project[]> {
-    return await db.select().from(projects).where(eq(projects.userId, userId));
+    return await getDb().select().from(projects).where(eq(projects.userId, userId));
   }
 
   async createProject(userId: number, project: Omit<InsertProject, "userId">): Promise<Project> {
-    const [newProject] = await db.insert(projects).values({ ...project, userId }).returning();
+    const [newProject] = await getDb().insert(projects).values({ ...project, userId }).returning();
     return newProject;
   }
 
@@ -117,30 +117,30 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProject(id: number, userId: number): Promise<void> {
-    await db.delete(projects).where(and(eq(projects.id, id), eq(projects.userId, userId)));
+    await getDb().delete(projects).where(and(eq(projects.id, id), eq(projects.userId, userId)));
   }
 
   // Mocks
   async getMockInterviews(userId: number): Promise<MockInterview[]> {
-    return await db.select().from(mockInterviews).where(eq(mockInterviews.userId, userId)).orderBy(desc(mockInterviews.date));
+    return await getDb().select().from(mockInterviews).where(eq(mockInterviews.userId, userId)).orderBy(desc(mockInterviews.date));
   }
 
   async createMockInterview(userId: number, interview: Omit<InsertMockInterview, "userId">): Promise<MockInterview> {
-    const [newInterview] = await db.insert(mockInterviews).values({ ...interview, userId }).returning();
+    const [newInterview] = await getDb().insert(mockInterviews).values({ ...interview, userId }).returning();
     return newInterview;
   }
 
   async deleteMockInterview(id: number, userId: number): Promise<void> {
-    await db.delete(mockInterviews).where(and(eq(mockInterviews.id, id), eq(mockInterviews.userId, userId)));
+    await getDb().delete(mockInterviews).where(and(eq(mockInterviews.id, id), eq(mockInterviews.userId, userId)));
   }
 
   // Logs
   async getDailyLogs(userId: number): Promise<DailyLog[]> {
-    return await db.select().from(dailyLogs).where(eq(dailyLogs.userId, userId)).orderBy(desc(dailyLogs.date));
+    return await getDb().select().from(dailyLogs).where(eq(dailyLogs.userId, userId)).orderBy(desc(dailyLogs.date));
   }
 
   async createDailyLog(userId: number, log: Omit<InsertDailyLog, "userId">): Promise<DailyLog> {
-    const [newLog] = await db.insert(dailyLogs).values({ ...log, userId }).returning();
+    const [newLog] = await getDb().insert(dailyLogs).values({ ...log, userId }).returning();
     return newLog;
   }
 }
