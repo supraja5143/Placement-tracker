@@ -18,7 +18,7 @@ function getPool(): pg.Pool {
       idleTimeoutMillis: 10000,
       connectionTimeoutMillis: 5000,
       ssl: process.env.NODE_ENV === "production"
-        ? { rejectUnauthorized: false }
+        ? { rejectUnauthorized: true }
         : undefined,
     });
   }

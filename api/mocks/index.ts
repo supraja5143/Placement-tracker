@@ -1,15 +1,16 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { withHandler } from "../_lib/middleware";
+import type { VercelResponse } from "@vercel/node";
+import { withAuth, type AuthenticatedRequest } from "../_lib/middleware";
 import { storage } from "../_lib/storage";
 import { insertMockInterviewSchema } from "../../shared/schema";
 import { z } from "zod";
 
 const createInput = insertMockInterviewSchema.omit({ userId: true });
-const DEFAULT_USER_ID = 1;
 
-export default withHandler(async (req: VercelRequest, res: VercelResponse) => {
+export default withAuth(async (req: AuthenticatedRequest, res: VercelResponse) => {
+  const userId = req.user.userId;
+
   if (req.method === "GET") {
-    const mocks = await storage.getMockInterviews(DEFAULT_USER_ID);
+    const mocks = await storage.getMockInterviews(userId);
     res.status(200).json(mocks);
     return;
   }
@@ -17,7 +18,7 @@ export default withHandler(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method === "POST") {
     try {
       const parsed = createInput.parse(req.body);
-      const mock = await storage.createMockInterview(DEFAULT_USER_ID, parsed);
+      const mock = await storage.createMockInterview(userId, parsed);
       res.status(201).json(mock);
     } catch (e) {
       if (e instanceof z.ZodError) {
@@ -31,7 +32,11 @@ export default withHandler(async (req: VercelRequest, res: VercelResponse) => {
 
   if (req.method === "DELETE") {
     const id = parseInt(req.query.id as string);
-    await storage.deleteMockInterview(id, DEFAULT_USER_ID);
+    if (isNaN(id)) {
+      res.status(400).json({ message: "Invalid ID" });
+      return;
+    }
+    await storage.deleteMockInterview(id, userId);
     res.status(204).end();
     return;
   }
