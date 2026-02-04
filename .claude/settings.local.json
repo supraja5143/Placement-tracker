@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(docker run:*)",
+      "Bash(npm run db:push:*)",
+      "Bash(docker exec:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(tasklist /FI \"PID eq 6352\" /FO LIST)",
+      "Bash(cmd /c \"tasklist /FI \"\"PID eq 6352\"\" /FO LIST\")",
+      "Bash(cmd /c \"tasklist /FI \"\"PID eq 17024\"\" /FO LIST\")",
+      "Bash(docker stop:*)",
+      "Bash(docker rm:*)",
+      "Bash(timeout:*)",
+      "Bash(cmd /c \"timeout /t 3 /nobreak >nul && docker exec placement-tracker-db psql -U postgres -d placement_tracker -c \"\"SELECT 1;\"\"\")",
+      "Bash(npm run dev:*)"
+    ]
+  }
+}
