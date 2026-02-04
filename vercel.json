@@ -1,12 +1,7 @@
 {
   "framework": "vite",
-  "buildCommand": "vite build",
+  "buildCommand": "node build-api.mjs && vite build",
   "outputDirectory": "dist/public",
-  "functions": {
-    "api/**/*.ts": {
-      "includeFiles": "{api/_lib/**,shared/**}"
-    }
-  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
