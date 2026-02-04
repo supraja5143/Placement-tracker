@@ -20,7 +20,7 @@ export default function DailyLog() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     createMutation.mutate(
-      { content, hoursSpent: parseInt(hoursSpent) || 0, date: new Date() }, // Fixed: sending Date, handled by zod coercion
+      { content, hoursSpent: parseInt(hoursSpent) || 0, date: new Date().toISOString() }, // Fixed: sending Date, handled by zod coercion
       {
         onSuccess: () => {
           setIsDialogOpen(false);

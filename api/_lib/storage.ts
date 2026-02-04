@@ -1,4 +1,4 @@
-import { 
+import {
   users, dsaTopics, csTopics, projects, mockInterviews, dailyLogs,
   type User, type InsertUser,
   type DsaTopic, type InsertDsaTopic,
@@ -6,7 +6,7 @@ import {
   type Project, type InsertProject,
   type MockInterview, type InsertMockInterview,
   type DailyLog, type InsertDailyLog
-} from "@shared/schema";
+} from "../../shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
 

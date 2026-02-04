@@ -1,0 +1,28 @@
+import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
+import * as schema from "../../shared/schema";
+
+const { Pool } = pg;
+
+// Singleton pattern: reuse pool across warm invocations in serverless
+let pool: pg.Pool | undefined;
+
+function getPool(): pg.Pool {
+  if (!pool) {
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL must be set.");
+    }
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      max: 5,
+      idleTimeoutMillis: 10000,
+      connectionTimeoutMillis: 5000,
+      ssl: process.env.NODE_ENV === "production"
+        ? { rejectUnauthorized: false }
+        : undefined,
+    });
+  }
+  return pool;
+}
+
+export const db = drizzle(getPool(), { schema });
