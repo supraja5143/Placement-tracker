@@ -1,16 +1,15 @@
-import type { VercelResponse } from "@vercel/node";
-import { withAuth, type AuthenticatedRequest } from "../_lib/middleware";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { withHandler } from "../_lib/middleware";
 import { storage } from "../_lib/storage";
 import { insertProjectSchema } from "../../shared/schema";
 import { z } from "zod";
 
 const createInput = insertProjectSchema.omit({ userId: true });
+const DEFAULT_USER_ID = 1;
 
-export default withAuth(async (req: AuthenticatedRequest, res: VercelResponse) => {
-  const userId = req.user.userId;
-
+export default withHandler(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method === "GET") {
-    const projectsList = await storage.getProjects(userId);
+    const projectsList = await storage.getProjects(DEFAULT_USER_ID);
     res.status(200).json(projectsList);
     return;
   }
@@ -18,7 +17,7 @@ export default withAuth(async (req: AuthenticatedRequest, res: VercelResponse) =
   if (req.method === "POST") {
     try {
       const parsed = createInput.parse(req.body);
-      const project = await storage.createProject(userId, parsed);
+      const project = await storage.createProject(DEFAULT_USER_ID, parsed);
       res.status(201).json(project);
     } catch (e) {
       if (e instanceof z.ZodError) {

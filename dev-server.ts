@@ -3,10 +3,6 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 
 // Import all serverless function handlers
-import loginHandler from "./api/login";
-import registerHandler from "./api/register";
-import logoutHandler from "./api/logout";
-import userHandler from "./api/user";
 import dsaIndexHandler from "./api/dsa/index";
 import dsaIdHandler from "./api/dsa/[id]";
 import csIndexHandler from "./api/cs/index";
@@ -33,12 +29,6 @@ function vercelAdapter(handler: Function) {
 async function main() {
   const app = express();
   app.use(express.json());
-
-  // Auth routes
-  app.all("/api/login", vercelAdapter(loginHandler));
-  app.all("/api/register", vercelAdapter(registerHandler));
-  app.all("/api/logout", vercelAdapter(logoutHandler));
-  app.all("/api/user", vercelAdapter(userHandler));
 
   // Data routes
   app.all("/api/dsa", vercelAdapter(dsaIndexHandler));

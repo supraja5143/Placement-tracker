@@ -1,16 +1,15 @@
-import type { VercelResponse } from "@vercel/node";
-import { withAuth, type AuthenticatedRequest } from "../_lib/middleware";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { withHandler } from "../_lib/middleware";
 import { storage } from "../_lib/storage";
 import { insertMockInterviewSchema } from "../../shared/schema";
 import { z } from "zod";
 
 const createInput = insertMockInterviewSchema.omit({ userId: true });
+const DEFAULT_USER_ID = 1;
 
-export default withAuth(async (req: AuthenticatedRequest, res: VercelResponse) => {
-  const userId = req.user.userId;
-
+export default withHandler(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method === "GET") {
-    const mocks = await storage.getMockInterviews(userId);
+    const mocks = await storage.getMockInterviews(DEFAULT_USER_ID);
     res.status(200).json(mocks);
     return;
   }
@@ -18,7 +17,7 @@ export default withAuth(async (req: AuthenticatedRequest, res: VercelResponse) =
   if (req.method === "POST") {
     try {
       const parsed = createInput.parse(req.body);
-      const mock = await storage.createMockInterview(userId, parsed);
+      const mock = await storage.createMockInterview(DEFAULT_USER_ID, parsed);
       res.status(201).json(mock);
     } catch (e) {
       if (e instanceof z.ZodError) {

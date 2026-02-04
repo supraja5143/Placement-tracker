@@ -1,12 +1,13 @@
-import type { VercelResponse } from "@vercel/node";
-import { withAuth, type AuthenticatedRequest } from "../_lib/middleware";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { withHandler } from "../_lib/middleware";
 import { storage } from "../_lib/storage";
 import { insertDsaTopicSchema } from "../../shared/schema";
 import { z } from "zod";
 
 const updateInput = insertDsaTopicSchema.partial().omit({ userId: true });
+const DEFAULT_USER_ID = 1;
 
-export default withAuth(async (req: AuthenticatedRequest, res: VercelResponse) => {
+export default withHandler(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method !== "PATCH") {
     res.status(405).json({ message: "Method not allowed" });
     return;
@@ -15,7 +16,7 @@ export default withAuth(async (req: AuthenticatedRequest, res: VercelResponse) =
   try {
     const id = parseInt(req.query.id as string);
     const parsed = updateInput.parse(req.body);
-    const topic = await storage.updateDsaTopic(id, req.user.userId, parsed);
+    const topic = await storage.updateDsaTopic(id, DEFAULT_USER_ID, parsed);
     res.status(200).json(topic);
   } catch (e) {
     if (e instanceof z.ZodError) {

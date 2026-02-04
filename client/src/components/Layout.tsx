@@ -1,16 +1,13 @@
 import { Link, useLocation } from "wouter";
-import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { 
-  LayoutDashboard, 
-  Code2, 
-  BookOpen, 
-  FolderGit2, 
-  Users, 
-  ScrollText, 
-  LogOut,
+import {
+  LayoutDashboard,
+  Code2,
+  BookOpen,
+  FolderGit2,
+  Users,
+  ScrollText,
   Menu,
-  X
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -22,7 +19,6 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
-  const { user, logoutMutation } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navigation = [
@@ -71,23 +67,6 @@ export function Layout({ children }: LayoutProps) {
           );
         })}
       </nav>
-
-      <div className="p-4 border-t border-sidebar-border bg-sidebar/50">
-        <div className="flex items-center justify-between mb-4 px-2">
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">{user?.username}</span>
-            <span className="text-xs text-muted-foreground">Ready to crush it?</span>
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10 hover:border-destructive/20 transition-all"
-          onClick={() => logoutMutation.mutate()}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Log out
-        </Button>
-      </div>
     </div>
   );
 

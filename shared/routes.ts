@@ -1,12 +1,11 @@
 import { z } from 'zod';
-import { 
-  insertUserSchema, 
-  insertDsaTopicSchema, 
-  insertCsTopicSchema, 
-  insertProjectSchema, 
-  insertMockInterviewSchema, 
+import {
+  insertDsaTopicSchema,
+  insertCsTopicSchema,
+  insertProjectSchema,
+  insertMockInterviewSchema,
   insertDailyLogSchema,
-  users, dsaTopics, csTopics, projects, mockInterviews, dailyLogs
+  dsaTopics, csTopics, projects, mockInterviews, dailyLogs
 } from './schema';
 
 export const errorSchemas = {
@@ -20,47 +19,9 @@ export const errorSchemas = {
   internal: z.object({
     message: z.string(),
   }),
-  unauthorized: z.object({
-    message: z.string(),
-  }),
 };
 
 export const api = {
-  auth: {
-    register: {
-      method: 'POST' as const,
-      path: '/api/register',
-      input: insertUserSchema,
-      responses: {
-        201: z.custom<typeof users.$inferSelect>(),
-        400: errorSchemas.validation,
-      },
-    },
-    login: {
-      method: 'POST' as const,
-      path: '/api/login',
-      input: insertUserSchema,
-      responses: {
-        200: z.custom<typeof users.$inferSelect>(),
-        401: errorSchemas.unauthorized,
-      },
-    },
-    logout: {
-      method: 'POST' as const,
-      path: '/api/logout',
-      responses: {
-        200: z.void(),
-      },
-    },
-    me: {
-      method: 'GET' as const,
-      path: '/api/user',
-      responses: {
-        200: z.custom<typeof users.$inferSelect>(),
-        401: errorSchemas.unauthorized,
-      },
-    },
-  },
   dsa: {
     list: {
       method: 'GET' as const,

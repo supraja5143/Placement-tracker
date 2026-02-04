@@ -16,7 +16,8 @@
       "Bash(cmd /c \"timeout /t 3 /nobreak >nul && docker exec placement-tracker-db psql -U postgres -d placement_tracker -c \"\"SELECT 1;\"\"\")",
       "Bash(npm run dev:*)",
       "Bash(npx tsc:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(del apilogin.ts apiregister.ts apilogout.ts)"
     ]
   }
 }
