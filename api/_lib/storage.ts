@@ -70,7 +70,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateDsaTopic(id: number, userId: number, updates: Partial<InsertDsaTopic>): Promise<DsaTopic> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(dsaTopics)
       .set(updates)
       .where(and(eq(dsaTopics.id, id), eq(dsaTopics.userId, userId)))
@@ -89,7 +89,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateCsTopic(id: number, userId: number, updates: Partial<InsertCsTopic>): Promise<CsTopic> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(csTopics)
       .set(updates)
       .where(and(eq(csTopics.id, id), eq(csTopics.userId, userId)))
@@ -108,7 +108,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateProject(id: number, userId: number, updates: Partial<InsertProject>): Promise<Project> {
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(projects)
       .set(updates)
       .where(and(eq(projects.id, id), eq(projects.userId, userId)))
