@@ -29,5 +29,12 @@ export default withHandler(async (req: VercelRequest, res: VercelResponse) => {
     return;
   }
 
+  if (req.method === "DELETE") {
+    const id = parseInt(req.query.id as string);
+    await storage.deleteMockInterview(id, DEFAULT_USER_ID);
+    res.status(204).end();
+    return;
+  }
+
   res.status(405).json({ message: "Method not allowed" });
 });

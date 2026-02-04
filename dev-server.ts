@@ -3,15 +3,11 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 
 // Import all serverless function handlers
-import dsaIndexHandler from "./api/dsa/index";
-import dsaIdHandler from "./api/dsa/[id]";
-import csIndexHandler from "./api/cs/index";
-import csIdHandler from "./api/cs/[id]";
-import projectsIndexHandler from "./api/projects/index";
-import projectsIdHandler from "./api/projects/[id]";
-import mocksIndexHandler from "./api/mocks/index";
-import mocksIdHandler from "./api/mocks/[id]";
-import logsIndexHandler from "./api/logs/index";
+import dsaHandler from "./api/dsa/index";
+import csHandler from "./api/cs/index";
+import projectsHandler from "./api/projects/index";
+import mocksHandler from "./api/mocks/index";
+import logsHandler from "./api/logs/index";
 
 // Adapter: convert Express req/res to work with Vercel handlers
 function vercelAdapter(handler: Function) {
@@ -31,15 +27,11 @@ async function main() {
   app.use(express.json());
 
   // Data routes
-  app.all("/api/dsa", vercelAdapter(dsaIndexHandler));
-  app.all("/api/dsa/:id", vercelAdapter(dsaIdHandler));
-  app.all("/api/cs", vercelAdapter(csIndexHandler));
-  app.all("/api/cs/:id", vercelAdapter(csIdHandler));
-  app.all("/api/projects", vercelAdapter(projectsIndexHandler));
-  app.all("/api/projects/:id", vercelAdapter(projectsIdHandler));
-  app.all("/api/mocks", vercelAdapter(mocksIndexHandler));
-  app.all("/api/mocks/:id", vercelAdapter(mocksIdHandler));
-  app.all("/api/logs", vercelAdapter(logsIndexHandler));
+  app.all("/api/dsa", vercelAdapter(dsaHandler));
+  app.all("/api/cs", vercelAdapter(csHandler));
+  app.all("/api/projects", vercelAdapter(projectsHandler));
+  app.all("/api/mocks", vercelAdapter(mocksHandler));
+  app.all("/api/logs", vercelAdapter(logsHandler));
 
   // Vite dev server for frontend
   const vite = await createViteServer({

@@ -17,7 +17,8 @@
       "Bash(npm run dev:*)",
       "Bash(npx tsc:*)",
       "Bash(npm run build:*)",
-      "Bash(del apilogin.ts apiregister.ts apilogout.ts)"
+      "Bash(del apilogin.ts apiregister.ts apilogout.ts)",
+      "Bash(del \"c:\\\\Users\\\\Supraja Karumuri\\\\Downloads\\\\Placement-Preparation-Tracker\\\\Placement-Preparation-Tracker\\\\api\\\\cs\\\\[id].ts\")"
     ]
   }
 }

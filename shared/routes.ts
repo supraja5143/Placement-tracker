@@ -40,7 +40,7 @@ export const api = {
     },
     update: {
       method: 'PATCH' as const,
-      path: '/api/dsa/:id',
+      path: '/api/dsa',
       input: insertDsaTopicSchema.partial().omit({ userId: true }),
       responses: {
         200: z.custom<typeof dsaTopics.$inferSelect>(),
@@ -65,7 +65,7 @@ export const api = {
     },
     update: {
       method: 'PATCH' as const,
-      path: '/api/cs/:id',
+      path: '/api/cs',
       input: insertCsTopicSchema.partial().omit({ userId: true }),
       responses: {
         200: z.custom<typeof csTopics.$inferSelect>(),
@@ -90,7 +90,7 @@ export const api = {
     },
     update: {
       method: 'PATCH' as const,
-      path: '/api/projects/:id',
+      path: '/api/projects',
       input: insertProjectSchema.partial().omit({ userId: true }),
       responses: {
         200: z.custom<typeof projects.$inferSelect>(),
@@ -98,7 +98,7 @@ export const api = {
     },
     delete: {
       method: 'DELETE' as const,
-      path: '/api/projects/:id',
+      path: '/api/projects',
       responses: {
         204: z.void(),
       },
@@ -122,7 +122,7 @@ export const api = {
     },
     delete: {
       method: 'DELETE' as const,
-      path: '/api/mocks/:id',
+      path: '/api/mocks',
       responses: {
         204: z.void(),
       },
@@ -149,12 +149,18 @@ export const api = {
 
 export function buildUrl(path: string, params?: Record<string, string | number>): string {
   let url = path;
+  const queryParams: string[] = [];
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       if (url.includes(`:${key}`)) {
         url = url.replace(`:${key}`, String(value));
+      } else {
+        queryParams.push(`${key}=${encodeURIComponent(String(value))}`);
       }
     });
+  }
+  if (queryParams.length > 0) {
+    url += `?${queryParams.join('&')}`;
   }
   return url;
 }
