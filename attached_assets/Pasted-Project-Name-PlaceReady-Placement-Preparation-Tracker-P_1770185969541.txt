@@ -1,0 +1,94 @@
+Project Name
+PlaceReady – Placement Preparation Tracker
+Problem Statement
+Students preparing for placements often struggle to track their preparation across multiple areas such as DSA, CS fundamentals, projects, and mock interviews. This lack of structure causes confusion, inconsistent preparation, and anxiety about readiness.
+Solution
+PlaceReady is a single dashboard application that helps placement aspirants systematically track their preparation, visualize progress, and understand their overall readiness for interviews.
+MVP Objective
+Build and publish a minimal yet effective application that:
+Organizes placement preparation in one place
+Encourages daily consistency
+Gives a clear readiness indicator
+Functional Requirements
+1. User Authentication
+User registration and login
+Secure authentication using JWT
+User-specific data isolation
+2. Preparation Tracking Modules
+a) DSA Tracker
+Track DSA topics (Arrays, Strings, Trees, etc.)
+Mark status:
+Not Started
+In Progress
+Completed
+b) CS Fundamentals Tracker
+Track subjects:
+OS
+DBMS
+CN
+OOPs
+Mark preparation status per topic
+c) Projects Tracker
+Add projects with:
+Project name
+Tech stack
+Status (Planned / In Progress / Completed)
+Mark projects as interview-ready
+d) Mock Interview Tracker
+Log mock interviews
+Capture:
+Date
+Topics asked
+Self-rating
+Notes / feedback
+3. Daily Preparation Log
+Daily entry for:
+What was studied
+Time spent
+Helps maintain preparation streak
+4. Readiness Score (Core Feature)
+Auto-calculated readiness score based on:
+DSA coverage
+CS fundamentals completion
+Project completion
+Mock interview participation
+Display score as a percentage (0–100)
+5. Dashboard
+Central dashboard showing:
+Overall readiness score
+Daily checklist
+Preparation progress summary
+Visual indicators (progress bars)
+6. Weekly Readiness Report
+Weekly summary of:
+Topics covered
+Tasks completed
+Readiness score change
+Technical Requirements
+Frontend
+Framework: Next.js (App Router)
+Language: TypeScript
+Styling: Tailwind CSS
+State Management: React Hooks / Context API
+Form Handling: React Hook Form
+API Communication: Fetch / Axios
+Responsive design (mobile + desktop)
+Backend
+Framework: NestJS
+Language: TypeScript
+Architecture: Modular (Auth, Prep, Dashboard)
+Authentication: JWT + Guards
+Validation: class-validator
+Business logic handled in service layer
+Database & ORM
+Database: PostgreSQL
+ORM: Drizzle ORM
+Type-safe SQL-first schema
+Migration management using Drizzle
+Core Data Models
+User
+DSA Topic
+CS Topic
+Project
+Mock Interview
+Daily Log
