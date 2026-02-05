@@ -61,13 +61,30 @@ const dailyLogs = pgTable("daily_logs", {
   hoursSpent: integer("hours_spent").notNull(),
 });
 
+const customSections = pgTable("custom_sections", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  icon: text("icon").notNull().default("BookOpen"),
+});
+
+const customTopics = pgTable("custom_topics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  sectionId: integer("section_id").notNull(),
+  topic: text("topic").notNull(),
+  status: text("status").notNull().default("not_started"),
+});
+
 const insertDsaTopicSchema = createInsertSchema(dsaTopics).omit({ id: true });
 const insertCsTopicSchema = createInsertSchema(csTopics).omit({ id: true });
 const insertProjectSchema = createInsertSchema(projects).omit({ id: true });
 const insertMockInterviewSchema = createInsertSchema(mockInterviews).omit({ id: true });
 const insertDailyLogSchema = createInsertSchema(dailyLogs).omit({ id: true });
+const insertCustomSectionSchema = createInsertSchema(customSections).omit({ id: true });
+const insertCustomTopicSchema = createInsertSchema(customTopics).omit({ id: true });
 
-const schema = { users, dsaTopics, csTopics, projects, mockInterviews, dailyLogs };
+const schema = { users, dsaTopics, csTopics, projects, mockInterviews, dailyLogs, customSections, customTopics };
 
 type User = typeof users.$inferSelect;
 
@@ -462,6 +479,101 @@ async function handleLogs(req: VercelRequest, res: VercelResponse) {
   res.status(405).json({ message: "Method not allowed" });
 }
 
+async function handleCustomSections(req: VercelRequest, res: VercelResponse) {
+  const authUser = getAuthUser(req);
+  if (!authUser) {
+    res.status(401).json({ message: "Authentication required" });
+    return;
+  }
+  const userId = authUser.userId;
+
+  if (req.method === "GET") {
+    const sections = await getDb().select().from(customSections).where(eq(customSections.userId, userId));
+    res.status(200).json(sections);
+    return;
+  }
+
+  if (req.method === "POST") {
+    const createInput = insertCustomSectionSchema.omit({ userId: true });
+    try {
+      const parsed = createInput.parse(req.body);
+      const [section] = await getDb().insert(customSections).values({ ...parsed, userId }).returning();
+      res.status(201).json(section);
+    } catch (e) {
+      if (e instanceof z.ZodError) { res.status(400).json(e.errors); } else { throw e; }
+    }
+    return;
+  }
+
+  if (req.method === "DELETE") {
+    const id = parseInt(req.query.id as string);
+    if (isNaN(id)) { res.status(400).json({ message: "Invalid ID" }); return; }
+    await getDb().delete(customTopics).where(and(eq(customTopics.sectionId, id), eq(customTopics.userId, userId)));
+    await getDb().delete(customSections).where(and(eq(customSections.id, id), eq(customSections.userId, userId)));
+    res.status(204).end();
+    return;
+  }
+
+  res.status(405).json({ message: "Method not allowed" });
+}
+
+async function handleCustomTopics(req: VercelRequest, res: VercelResponse) {
+  const authUser = getAuthUser(req);
+  if (!authUser) {
+    res.status(401).json({ message: "Authentication required" });
+    return;
+  }
+  const userId = authUser.userId;
+
+  if (req.method === "GET") {
+    const sectionId = req.query.sectionId ? parseInt(req.query.sectionId as string) : undefined;
+    let topics;
+    if (sectionId && !isNaN(sectionId)) {
+      topics = await getDb().select().from(customTopics).where(and(eq(customTopics.userId, userId), eq(customTopics.sectionId, sectionId)));
+    } else {
+      topics = await getDb().select().from(customTopics).where(eq(customTopics.userId, userId));
+    }
+    res.status(200).json(topics);
+    return;
+  }
+
+  if (req.method === "POST") {
+    const createInput = insertCustomTopicSchema.omit({ userId: true });
+    try {
+      const parsed = createInput.parse(req.body);
+      const [topic] = await getDb().insert(customTopics).values({ ...parsed, userId }).returning();
+      res.status(201).json(topic);
+    } catch (e) {
+      if (e instanceof z.ZodError) { res.status(400).json(e.errors); } else { throw e; }
+    }
+    return;
+  }
+
+  if (req.method === "PATCH") {
+    const id = parseInt(req.query.id as string);
+    if (isNaN(id)) { res.status(400).json({ message: "Invalid ID" }); return; }
+    const updateInput = insertCustomTopicSchema.partial().omit({ userId: true });
+    try {
+      const parsed = updateInput.parse(req.body);
+      const [topic] = await getDb().update(customTopics).set(parsed).where(and(eq(customTopics.id, id), eq(customTopics.userId, userId))).returning();
+      res.status(200).json(topic);
+    } catch (e) {
+      if (e instanceof z.ZodError) { res.status(400).json(e.errors); } else { throw e; }
+    }
+    return;
+  }
+
+  if (req.method === "DELETE") {
+    const id = parseInt(req.query.id as string);
+    if (isNaN(id)) { res.status(400).json({ message: "Invalid ID" }); return; }
+    await getDb().delete(customTopics).where(and(eq(customTopics.id, id), eq(customTopics.userId, userId)));
+    res.status(204).end();
+    return;
+  }
+
+  res.status(405).json({ message: "Method not allowed" });
+}
+
 async function handleHealth(req: VercelRequest, res: VercelResponse) {
   const checks: Record<string, string> = {};
   checks.DATABASE_URL = process.env.DATABASE_URL ? "set" : "MISSING";
@@ -508,6 +620,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return handleMocks(req, res);
       case "logs":
         return handleLogs(req, res);
+      case "custom-sections":
+        return handleCustomSections(req, res);
+      case "custom-topics":
+        return handleCustomTopics(req, res);
       case "health":
         return handleHealth(req, res);
       default:

@@ -5,7 +5,9 @@ import {
   insertProjectSchema,
   insertMockInterviewSchema,
   insertDailyLogSchema,
-  dsaTopics, csTopics, projects, mockInterviews, dailyLogs
+  dsaTopics, csTopics, projects, mockInterviews, dailyLogs,
+  insertCustomSectionSchema, insertCustomTopicSchema,
+  customSections, customTopics,
 } from './schema';
 
 export const errorSchemas = {
@@ -142,6 +144,62 @@ export const api = {
       input: insertDailyLogSchema.omit({ userId: true }),
       responses: {
         201: z.custom<typeof dailyLogs.$inferSelect>(),
+      },
+    },
+  },
+  customSections: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/custom-sections',
+      responses: {
+        200: z.array(z.custom<typeof customSections.$inferSelect>()),
+      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/custom-sections',
+      input: insertCustomSectionSchema.omit({ userId: true }),
+      responses: {
+        201: z.custom<typeof customSections.$inferSelect>(),
+      },
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/custom-sections',
+      responses: {
+        204: z.void(),
+      },
+    },
+  },
+  customTopics: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/custom-topics',
+      responses: {
+        200: z.array(z.custom<typeof customTopics.$inferSelect>()),
+      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/custom-topics',
+      input: insertCustomTopicSchema.omit({ userId: true }),
+      responses: {
+        201: z.custom<typeof customTopics.$inferSelect>(),
+      },
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/custom-topics',
+      input: insertCustomTopicSchema.partial().omit({ userId: true }),
+      responses: {
+        200: z.custom<typeof customTopics.$inferSelect>(),
+      },
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/custom-topics',
+      responses: {
+        204: z.void(),
       },
     },
   },

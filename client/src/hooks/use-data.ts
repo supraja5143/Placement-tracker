@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
-import type { InsertDsaTopic, InsertCsTopic, InsertProject, InsertMockInterview, InsertDailyLog } from "@shared/schema";
+import type { InsertDsaTopic, InsertCsTopic, InsertProject, InsertMockInterview, InsertDailyLog, InsertCustomSection, InsertCustomTopic } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { getToken } from "@/lib/token";
 
@@ -252,6 +252,115 @@ export function useCreateDailyLog() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.logs.list.path] });
       toast({ title: "Logged", description: "Daily activity saved" });
+    },
+  });
+}
+
+// === Custom Sections Hooks ===
+export function useCustomSections() {
+  return useQuery({
+    queryKey: [api.customSections.list.path],
+    queryFn: async () => {
+      const res = await fetch(api.customSections.list.path, { headers: authHeaders() });
+      if (!res.ok) throw new Error("Failed to fetch custom sections");
+      return api.customSections.list.responses[200].parse(await res.json());
+    },
+  });
+}
+
+export function useCreateCustomSection() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: Omit<InsertCustomSection, "userId">) => {
+      const res = await fetch(api.customSections.create.path, {
+        method: api.customSections.create.method,
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to create section");
+      return api.customSections.create.responses[201].parse(await res.json());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.customSections.list.path] });
+    },
+  });
+}
+
+export function useDeleteCustomSection() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const url = buildUrl(api.customSections.delete.path, { id });
+      const res = await fetch(url, { method: api.customSections.delete.method, headers: authHeaders() });
+      if (!res.ok) throw new Error("Failed to delete section");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.customSections.list.path] });
+      queryClient.invalidateQueries({ queryKey: [api.customTopics.list.path] });
+    },
+  });
+}
+
+// === Custom Topics Hooks ===
+export function useCustomTopics(sectionId?: number) {
+  return useQuery({
+    queryKey: [api.customTopics.list.path, sectionId],
+    queryFn: async () => {
+      const url = sectionId
+        ? buildUrl(api.customTopics.list.path, { sectionId })
+        : api.customTopics.list.path;
+      const res = await fetch(url, { headers: authHeaders() });
+      if (!res.ok) throw new Error("Failed to fetch custom topics");
+      return api.customTopics.list.responses[200].parse(await res.json());
+    },
+  });
+}
+
+export function useCreateCustomTopic() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: Omit<InsertCustomTopic, "userId">) => {
+      const res = await fetch(api.customTopics.create.path, {
+        method: api.customTopics.create.method,
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to create topic");
+      return api.customTopics.create.responses[201].parse(await res.json());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.customTopics.list.path] });
+    },
+  });
+}
+
+export function useUpdateCustomTopic() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: { id: number } & Partial<InsertCustomTopic>) => {
+      const url = buildUrl(api.customTopics.update.path, { id });
+      const res = await fetch(url, {
+        method: api.customTopics.update.method,
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      if (!res.ok) throw new Error("Failed to update topic");
+      return api.customTopics.update.responses[200].parse(await res.json());
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [api.customTopics.list.path] }),
+  });
+}
+
+export function useDeleteCustomTopic() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const url = buildUrl(api.customTopics.delete.path, { id });
+      const res = await fetch(url, { method: api.customTopics.delete.method, headers: authHeaders() });
+      if (!res.ok) throw new Error("Failed to delete topic");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.customTopics.list.path] });
     },
   });
 }

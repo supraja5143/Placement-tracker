@@ -12,6 +12,7 @@ import CsFundamentals from "@/pages/CsFundamentals";
 import Projects from "@/pages/Projects";
 import MockInterviews from "@/pages/MockInterviews";
 import DailyLog from "@/pages/DailyLog";
+import CustomTrackers from "@/pages/CustomTrackers";
 import AuthPage from "@/pages/AuthPage";
 import NotFound from "@/pages/not-found";
 
@@ -31,6 +32,8 @@ function Router() {
         <Route path="/projects" component={Projects} />
         <Route path="/mocks" component={MockInterviews} />
         <Route path="/logs" component={DailyLog} />
+        <Route path="/custom" component={CustomTrackers} />
+        <Route path="/custom/:id" component={CustomTrackers} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

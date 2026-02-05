@@ -1,7 +1,7 @@
-import { useDsaTopics, useCsTopics, useProjects, useMockInterviews, useDailyLogs } from "@/hooks/use-data";
+import { useDsaTopics, useCsTopics, useProjects, useMockInterviews, useDailyLogs, useCustomSections, useCustomTopics } from "@/hooks/use-data";
 import { ProgressCard } from "@/components/ProgressCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Code2, BookOpen, FolderGit2, Users, Flame, Trophy } from "lucide-react";
+import { Code2, BookOpen, FolderGit2, Users, Flame, Trophy, Layers } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,8 +12,10 @@ export default function Dashboard() {
   const { data: projects, isLoading: projectsLoading } = useProjects();
   const { data: mocks, isLoading: mocksLoading } = useMockInterviews();
   const { data: logs, isLoading: logsLoading } = useDailyLogs();
+  const { data: customSections, isLoading: sectionsLoading } = useCustomSections();
+  const { data: customTopics, isLoading: topicsLoading } = useCustomTopics();
 
-  const isLoading = dsaLoading || csLoading || projectsLoading || mocksLoading || logsLoading;
+  const isLoading = dsaLoading || csLoading || projectsLoading || mocksLoading || logsLoading || sectionsLoading || topicsLoading;
 
   if (isLoading) {
     return (
@@ -136,13 +138,28 @@ export default function Dashboard() {
           colorClass="bg-amber-500"
           icon={<FolderGit2 className="w-5 h-5" />}
         />
-        <ProgressCard 
-          title="Mock Interviews" 
-          value={mocks?.length || 0} 
+        <ProgressCard
+          title="Mock Interviews"
+          value={mocks?.length || 0}
           total={10} // Target goal
           colorClass="bg-rose-500"
           icon={<Users className="w-5 h-5" />}
         />
+        {customSections?.map((section) => {
+          const sectionTopics = customTopics?.filter(t => t.sectionId === section.id) || [];
+          const completed = sectionTopics.filter(t => t.status === "completed").length;
+          const total = sectionTopics.length;
+          return (
+            <ProgressCard
+              key={`custom-${section.id}`}
+              title={section.name}
+              value={completed}
+              total={total}
+              colorClass="bg-purple-500"
+              icon={<Layers className="w-5 h-5" />}
+            />
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

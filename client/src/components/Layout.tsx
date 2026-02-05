@@ -9,9 +9,11 @@ import {
   ScrollText,
   Menu,
   LogOut,
+  Layers,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useCustomSections } from "@/hooks/use-data";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -23,6 +25,7 @@ export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { logout } = useAuth();
+  const { data: customSections } = useCustomSections();
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -31,6 +34,12 @@ export function Layout({ children }: LayoutProps) {
     { name: "Projects", href: "/projects", icon: FolderGit2 },
     { name: "Mock Interviews", href: "/mocks", icon: Users },
     { name: "Daily Log", href: "/logs", icon: ScrollText },
+    { name: "Custom Trackers", href: "/custom", icon: Layers },
+    ...(customSections?.map(s => ({
+      name: s.name,
+      href: `/custom/${s.id}`,
+      icon: Layers,
+    })) || []),
   ];
 
   const NavContent = () => (
