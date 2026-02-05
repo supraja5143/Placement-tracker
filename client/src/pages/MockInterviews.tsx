@@ -1,7 +1,7 @@
 import { useMockInterviews, useCreateMockInterview, useDeleteMockInterview } from "@/hooks/use-data";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Star, Trash2, CalendarDays } from "lucide-react";
+import { Plus, Star, Trash2, CalendarDays, CheckCircle2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,11 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { format } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 export default function MockInterviews() {
   const { data: mocks, isLoading } = useMockInterviews();
   const createMutation = useCreateMockInterview();
   const deleteMutation = useDeleteMockInterview();
+  const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Form State
@@ -36,6 +38,11 @@ export default function MockInterviews() {
           setTopicsCovered("");
           setFeedback("");
           setRating([5]);
+          toast({
+            title: (<div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /><span className="text-green-600">Interview logged!</span></div>),
+            description: "Great practice session recorded",
+            className: "border-green-400 bg-green-50",
+          });
         }
       }
     );
@@ -127,7 +134,15 @@ export default function MockInterviews() {
                       size="icon" 
                       className="text-destructive hover:bg-destructive/10"
                       onClick={() => {
-                        if (confirm("Delete this log?")) deleteMutation.mutate(mock.id);
+                        if (confirm("Delete this log?")) deleteMutation.mutate(mock.id, {
+                          onSuccess: () => {
+                            toast({
+                              title: (<div className="flex items-center gap-2"><Trash2 className="w-4 h-4 text-red-500" /><span className="text-red-600">Interview deleted</span></div>),
+                              description: "Log has been removed",
+                              className: "border-red-400 bg-red-50",
+                            });
+                          }
+                        });
                       }}
                     >
                       <Trash2 className="w-5 h-5" />

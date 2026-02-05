@@ -21,7 +21,15 @@
       "Bash(del \"c:\\\\Users\\\\Supraja Karumuri\\\\Downloads\\\\Placement-Preparation-Tracker\\\\Placement-Preparation-Tracker\\\\api\\\\cs\\\\[id].ts\")",
       "Bash(set:*)",
       "Bash(npx drizzle-kit push:*)",
-      "Bash(npx cross-env DATABASE_URL=\"postgresql://neondb_owner:npg_5PHZ2QTzuOoI@ep-shiny-field-aiubkcs3-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require\" npx drizzle-kit push)"
+      "Bash(npx cross-env DATABASE_URL=\"postgresql://neondb_owner:npg_5PHZ2QTzuOoI@ep-shiny-field-aiubkcs3-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require\" npx drizzle-kit push)",
+      "Bash(node:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(ls:*)",
+      "Bash(npx vite build)",
+      "Bash(git status:*)",
+      "Bash(pg_isready:*)"
     ]
   }
 }

@@ -1,7 +1,7 @@
 import { useDsaTopics, useCreateDsaTopic, useUpdateDsaTopic } from "@/hooks/use-data";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, CheckCircle2, Circle, Clock } from "lucide-react";
+import { Plus, CheckCircle2, Circle, Clock, RotateCcw } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 const CATEGORIES = [
   "Arrays", "Strings", "Linked List", "Stacks & Queues", 
@@ -19,6 +20,7 @@ export default function DsaTracker() {
   const { data: topics, isLoading } = useDsaTopics();
   const createMutation = useCreateDsaTopic();
   const updateMutation = useUpdateDsaTopic();
+  const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Form State
@@ -39,11 +41,32 @@ export default function DsaTracker() {
   };
 
   const toggleStatus = (id: number, currentStatus: string) => {
-    const nextStatus = 
+    const nextStatus =
       currentStatus === "not_started" ? "in_progress" :
       currentStatus === "in_progress" ? "completed" : "not_started";
-    
-    updateMutation.mutate({ id, status: nextStatus });
+
+    updateMutation.mutate({ id, status: nextStatus }, {
+      onSuccess: () => {
+        if (nextStatus === "in_progress") {
+          toast({
+            title: (<div className="flex items-center gap-2"><Clock className="w-4 h-4 text-yellow-500" /><span className="text-yellow-600">Keep going!</span></div>),
+            description: "Your topic is now in progress",
+            className: "border-yellow-400 bg-yellow-50",
+          });
+        } else if (nextStatus === "completed") {
+          toast({
+            title: (<div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /><span className="text-green-600">Yay! Topic completed!</span></div>),
+            description: "Great job, keep up the momentum!",
+            className: "border-green-400 bg-green-50",
+          });
+        } else {
+          toast({
+            title: (<div className="flex items-center gap-2"><RotateCcw className="w-4 h-4 text-gray-500" /><span>Topic reset</span></div>),
+            description: "Topic marked as not started",
+          });
+        }
+      }
+    });
   };
 
   const getStatusIcon = (status: string) => {

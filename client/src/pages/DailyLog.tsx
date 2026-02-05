@@ -1,16 +1,18 @@
 import { useDailyLogs, useCreateDailyLog } from "@/hooks/use-data";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, BookOpen } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 export default function DailyLog() {
   const { data: logs, isLoading } = useDailyLogs();
   const createMutation = useCreateDailyLog();
+  const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Form State
@@ -26,6 +28,11 @@ export default function DailyLog() {
           setIsDialogOpen(false);
           setContent("");
           setHoursSpent("0");
+          toast({
+            title: (<div className="flex items-center gap-2"><BookOpen className="w-4 h-4 text-purple-500" /><span className="text-purple-600">Entry saved!</span></div>),
+            description: "Keep the streak going!",
+            className: "border-purple-400 bg-purple-50",
+          });
         }
       }
     );

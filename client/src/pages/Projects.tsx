@@ -1,7 +1,7 @@
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from "@/hooks/use-data";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Rocket, Code, ExternalLink, FolderGit2 } from "lucide-react";
+import { Plus, Trash2, Rocket, Code, ExternalLink, FolderGit2, CheckCircle2, Clock, FolderPlus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,12 +10,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Projects() {
   const { data: projects, isLoading } = useProjects();
   const createMutation = useCreateProject();
   const updateMutation = useUpdateProject();
   const deleteMutation = useDeleteProject();
+  const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Form State
@@ -33,13 +35,34 @@ export default function Projects() {
           setName("");
           setTechStack("");
           setStatus("planned");
+          toast({
+            title: (<div className="flex items-center gap-2"><FolderPlus className="w-4 h-4 text-blue-500" /><span className="text-blue-600">Project added!</span></div>),
+            description: `"${name}" has been created`,
+            className: "border-blue-400 bg-blue-50",
+          });
         }
       }
     );
   };
 
   const toggleInterviewReady = (id: number, current: boolean) => {
-    updateMutation.mutate({ id, isInterviewReady: !current });
+    updateMutation.mutate({ id, isInterviewReady: !current }, {
+      onSuccess: () => {
+        if (!current) {
+          toast({
+            title: (<div className="flex items-center gap-2"><Rocket className="w-4 h-4 text-green-500" /><span className="text-green-600">Interview ready!</span></div>),
+            description: "Project marked as interview ready",
+            className: "border-green-400 bg-green-50",
+          });
+        } else {
+          toast({
+            title: (<div className="flex items-center gap-2"><Clock className="w-4 h-4 text-yellow-500" /><span className="text-yellow-600">Not ready yet</span></div>),
+            description: "Project unmarked as interview ready",
+            className: "border-yellow-400 bg-yellow-50",
+          });
+        }
+      }
+    });
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -140,7 +163,15 @@ export default function Projects() {
                   size="icon" 
                   className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   onClick={() => {
-                    if (confirm("Delete this project?")) deleteMutation.mutate(project.id);
+                    if (confirm("Delete this project?")) deleteMutation.mutate(project.id, {
+                      onSuccess: () => {
+                        toast({
+                          title: (<div className="flex items-center gap-2"><Trash2 className="w-4 h-4 text-red-500" /><span className="text-red-600">Project deleted</span></div>),
+                          description: `"${project.name}" has been removed`,
+                          className: "border-red-400 bg-red-50",
+                        });
+                      }
+                    });
                   }}
                 >
                   <Trash2 className="w-4 h-4" />

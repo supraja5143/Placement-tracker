@@ -1,20 +1,22 @@
 import { useCsTopics, useCreateCsTopic, useUpdateCsTopic } from "@/hooks/use-data";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Check } from "lucide-react";
+import { Plus, Check, CheckCircle2, RotateCcw } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
-const SUBJECTS = ["OS", "DBMS", "CN", "OOPs"];
+const SUBJECTS = ["OS", "DBMS", "CN", "OOPS"];
 
 export default function CsFundamentals() {
   const { data: topics, isLoading } = useCsTopics();
   const createMutation = useCreateCsTopic();
   const updateMutation = useUpdateCsTopic();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("OS");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -37,7 +39,22 @@ export default function CsFundamentals() {
 
   const toggleStatus = (id: number, currentStatus: string) => {
     const nextStatus = currentStatus === "completed" ? "not_started" : "completed";
-    updateMutation.mutate({ id, status: nextStatus });
+    updateMutation.mutate({ id, status: nextStatus }, {
+      onSuccess: () => {
+        if (nextStatus === "completed") {
+          toast({
+            title: (<div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /><span className="text-green-600">Yay! Topic completed!</span></div>),
+            description: "Great job, keep up the momentum!",
+            className: "border-green-400 bg-green-50",
+          });
+        } else {
+          toast({
+            title: (<div className="flex items-center gap-2"><RotateCcw className="w-4 h-4 text-gray-500" /><span>Topic reset</span></div>),
+            description: "Topic marked as not started",
+          });
+        }
+      }
+    });
   };
 
   if (isLoading) return <div>Loading...</div>;

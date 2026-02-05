@@ -409,7 +409,9 @@ async function handleMocks(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === "POST") {
-    const createInput = insertMockInterviewSchema.omit({ userId: true });
+    const createInput = insertMockInterviewSchema.omit({ userId: true }).extend({
+      date: z.coerce.date(),
+    });
     try {
       const parsed = createInput.parse(req.body);
       const [mock] = await getDb().insert(mockInterviews).values({ ...parsed, userId }).returning();

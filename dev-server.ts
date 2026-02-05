@@ -22,7 +22,7 @@ async function main() {
   app.use(express.json());
 
   // Single handler for all API routes
-  app.all("/api/*", vercelAdapter(handler));
+  app.all("/api/*path", vercelAdapter(handler));
   app.all("/api", vercelAdapter(handler));
 
   // Vite dev server for frontend

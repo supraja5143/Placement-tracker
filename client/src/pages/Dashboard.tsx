@@ -53,8 +53,43 @@ export default function Dashboard() {
     (dsaScore * 0.3) + (csScore * 0.3) + (projectScore * 0.2) + (mockScore * 0.2)
   );
 
-  // Daily Streak (naive implementation - consecutive days with logs)
-  const streak = logs?.length || 0; // Simplified for now, just total logs count as "days active" roughly
+  // Daily Streak - consecutive days with logs ending today or yesterday
+  const streak = (() => {
+    if (!logs || logs.length === 0) return 0;
+    const uniqueDates = [...new Set(
+      logs.map(log => {
+        const d = new Date(log.date);
+        return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+      })
+    )].map(key => {
+      const [y, m, d] = key.split("-").map(Number);
+      return new Date(y, m, d);
+    }).sort((a, b) => b.getTime() - a.getTime());
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const firstLogDate = uniqueDates[0];
+    firstLogDate.setHours(0, 0, 0, 0);
+    if (firstLogDate.getTime() !== today.getTime() && firstLogDate.getTime() !== yesterday.getTime()) {
+      return 0;
+    }
+
+    let count = 1;
+    for (let i = 1; i < uniqueDates.length; i++) {
+      const prev = uniqueDates[i - 1];
+      const curr = uniqueDates[i];
+      const diffDays = Math.round((prev.getTime() - curr.getTime()) / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
+  })();
 
   const chartData = [
     { name: "Readiness", value: readinessScore, color: "#8b5cf6" }, // violet-500
